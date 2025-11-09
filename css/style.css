@@ -11,50 +11,179 @@ canvas {
 	display: block;
 }
 
-/* NEW OVERLAY STYLING */
+/* --- CORE OVERLAY STYLES (Full Screen, Centered) --- */
 #overlay {
     position: fixed;
-    top: 0;
-    left: 0;
+    top: 0; left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Dark semi-transparent background */
-    color: #669bcc; /* Light text color for contrast */
-    display: none; /* Hidden by default */
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #94d2bd; /* Pale text color */
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: center;
-    padding: 20px;
-    box-sizing: border-box;
-    z-index: 10; /* Ensure it's above the canvas */
+    z-index: 100 !important;
+    overflow: hidden; /* Ensure the whole overlay is scroll-free */
 }
 
-#overlay h1 {
-    font-size: 3em;
-    margin-bottom: 0.2em;
-    color: #669bcc; /* Red color for emphasis */
+#overlay-content {
+    /* CRITICAL: Use flex column to manage vertical spacing and prevent overflow */
+    display: flex;
+    flex-direction: column;
+    /* FIX: Use gap for reliable vertical spacing instead of explicit margins */
+    gap: 1vh; 
+    /* Remove justify-content to let content stack naturally */
+    
+    text-align: center; 
+    
+    /* Minimal padding */
+    padding: 1.5vh 2vw; 
+    background: #001219; /* Dark background for the card */
+    border: 3px solid #94d2bd; 
+    border-radius: 10px;
+    
+    /* CRITICAL: Limit height and prevent scrolling */
+    max-width: 90%;
+    /* Allowing content to determine height within max-height */
+    max-height: 95vh; 
+    height: auto; 
+    overflow-y: hidden; 
+    
+    box-sizing: border-box; 
 }
 
-#overlay p {
-    font-size: 1.2em;
-    margin-bottom: 1em;
+/* --- TEXT SCALING FIXES (Uses VW for scaling) --- */
+#overlay-title {
+    /* Smaller font, scales with viewport width */
+    font-size: 3.5vw; 
+    min-font-size: 18px;
+    /* REMOVED: margin-top/bottom - now uses gap */
+    margin: 0;
+}
+#overlay-message, #score-display, #design-selector-container label {
+    /* Even smaller font, scales with viewport width */
+    font-size: 1.8vw; 
+    min-font-size: 10px;
+    /* REMOVED: margin-top/bottom - now uses gap */
+    margin: 0;
 }
 
-#score-display {
-    font-size: 1.5em;
-    margin-bottom: 2em;
-    font-weight: bold;
-}
-
+/* --- START BUTTON CENTERING FIX & SCALING --- */
 #start-button {
-    padding: 15px 30px;
-    font-size: 1.5em;
-    background-color: #003049; /* Dark blue */
-    color: #669bcc; /* Cream white */
-    border: 3px solid #669bcc; /* Red border */
+    display: block; 
+    /* Reduced margin-top (gap handles other spacing) */
+    margin: 1vh auto 0 auto; 
+    padding: 1vh 3vw; 
+    font-size: 3vw; 
+    min-font-size: 16px;
+    background-color: #94d2bd; 
+    color: #001219;
+    border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s;
+}
+#start-button:hover {
+    background-color: #94d2bd; 
 }
 
+/* --- DESIGN BUTTON STYLES & SCALING --- */
+#design-selector-container {
+    /* REMOVED: margin-top/bottom - now uses gap */
+    margin: 0; 
+}
+#design-container {
+    display: flex;
+    gap: 1.5vw; 
+    /* Minimal vertical margin on the container to separate from label/score */
+    margin: 0.5vh 0; 
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.design-button {
+    /* Scale button dimensions with viewport, but cap at 50px for smaller devices */
+    width: 10vw;
+    height: 10vw;
+    max-width: 50px; 
+    max-height: 50px;
+    padding: 0;
+    
+    border: 2px solid #005f73; 
+    background-color: #94d2bd; 
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.1s;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; 
+}
+.design-button.selected {
+    border-color: #94d2bd; 
+    background-color: #94d2bd; 
+    box-shadow: 0 0 10px #94d2bd;
+    transform: scale(1.1); 
+}
+.design-button:hover:not(.selected):not(.locked) {
+     background-color: #94d2bd; 
+}
+
+/* --- LOCKED BUTTON STYLES --- */
+.design-button.locked {
+    opacity: 1; 
+    cursor: not-allowed;
+    position: relative;
+    background-color: #001219; 
+}
+.design-button.locked:hover {
+     transform: none;
+     box-shadow: none;
+}
+.design-button.locked::before {
+    content: attr(data-unlock-score); 
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #94d2bd; 
+    font-weight: bold;
+    /* Small font size to fit */
+    font-size: 2vw; 
+    z-index: 10; 
+    text-shadow: 0 0 5px #001219;
+    line-height: 1; 
+}
+
+/* Cap the size on larger screens */
+@media (min-width: 800px) {
+    .design-button {
+        max-width: 70px;
+        max-height: 70px;
+    }
+    .design-button.locked::before {
+        font-size: 16px; 
+    }
+    #overlay-title {
+        font-size: 28px;
+    }
+    #overlay-message, #score-display, #design-selector-container label {
+        font-size: 14px;
+    }
+}
+
+.design-preview-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; 
+}
+
+/* Dim the canvas when locked for contrast */
+.design-button.locked .design-preview-canvas {
+    opacity: 0.2; 
+}

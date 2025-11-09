@@ -104,7 +104,7 @@ window.onload = () => {
         cnv.height = window.innerHeight;
         // NEW: Calculate the scale factor based on height
         scaleFactor = cnv.height / SCALE_FACTOR_REF_HEIGHT;
-        r = Math.max(20, cnv.height / 18);
+        r = Math.max(15, cnv.height / 18);
         // Arrow size is r * 0.5
         arrowSize = r * 0.5;
         updateLayout();

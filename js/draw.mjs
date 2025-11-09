@@ -141,7 +141,7 @@ export function drawBall(ctx, x, y, r, designId) {
 export function drawDesignPreview(ctx, designId) {
     // The canvas is assumed to be square (width == height)
     const size = ctx.canvas.width;
-    const r = size * 0.4; // Set radius to 40% of canvas size
+    const r = size * 0.35; // Set radius to 40% of canvas size
     const centerX = size / 2;
     const centerY = size / 2;
     

@@ -22,150 +22,7 @@ export function OverlayManager(cnv) {
         overlay = document.createElement('div');
         overlay.id = 'overlay';
         
-        // Inject basic styles for the design buttons AND core overlay centering
-        const style = document.createElement('style');
-        style.innerHTML = `
-            /* --- CORE OVERLAY CENTERING STYLES --- */
-            #overlay {
-                position: fixed;
-                top: 0; left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0, 0, 0, 0.8);
-                color: #94d2bd; /* Pale text color */
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                z-index: 100 !important; /* CRITICAL: Ensure overlay always has high Z-index */
-            }
-            
-            #overlay-content {
-                text-align: center; 
-                padding: 3vh 3vw; /* SCALING FIX: Use viewport units for padding */
-                background: #001219; /* Dark background for the card */
-                border: 3px solid #94d2bd; 
-                border-radius: 10px;
-                max-width: 90%;
-                max-height: 90%; /* SCALING FIX: Limit height */
-                overflow-y: auto; /* SCALING FIX: Allow scrolling if content is too tall */
-            }
-
-            /* --- TEXT SCALING FIXES --- */
-            #overlay-title {
-                font-size: 5vw; /* SCALING FIX: Scale title with viewport width */
-                min-font-size: 24px;
-                margin-bottom: 0.5em;
-            }
-            #overlay-message, #score-display {
-                font-size: 2.5vw; /* SCALING FIX: Scale message and score text */
-                min-font-size: 14px;
-            }
-
-            /* --- START BUTTON CENTERING FIX & SCALING --- */
-            #start-button {
-                display: block; /* Treat as a block element */
-                margin: 2vh auto 0 auto; /* SCALING FIX: Use vh for vertical margin */
-                padding: 1.5vh 3vw; /* SCALING FIX: Scale padding */
-                font-size: 3vw; /* SCALING FIX: Scale font size */
-                min-font-size: 16px;
-                background-color: #94d2bd; 
-                color: #001219;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                transition: background-color 0.2s;
-            }
-            #start-button:hover {
-                background-color: #94d2bd; 
-            }
-
-            /* --- DESIGN BUTTON STYLES & SCALING --- */
-            #design-container {
-                display: flex;
-                gap: 2vw; /* SCALING FIX: Scale gap between buttons */
-                margin: 2vh 0; /* SCALING FIX: Scale vertical margin */
-                flex-wrap: wrap;
-                justify-content: center;
-            }
-            .design-button {
-                /* SCALING FIX: Scale button dimensions with viewport, but cap at 70px */
-                width: 10vw;
-                height: 10vw;
-                max-width: 70px; 
-                max-height: 70px;
-                padding: 0;
-                
-                border: 2px solid #005f73; /* Dark accent border */
-                background-color: #94d2bd; /* Pale background */
-                cursor: pointer;
-                border-radius: 5px;
-                transition: all 0.1s;
-                
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                position: relative; /* Crucial for z-index layering */
-            }
-            .design-button.selected {
-                border-color: #94d2bd; /* Vivid Orange highlight */
-                background-color: #94d2bd; /* Dark Teal background for selection */
-                box-shadow: 0 0 10px #94d2bd;
-                transform: scale(1.1); 
-            }
-            .design-button:hover:not(.selected):not(.locked) {
-                 background-color: #94d2bd; /* Pale Teal hover */
-            }
-            
-            /* --- LOCKED BUTTON STYLES (NEW) --- */
-            .design-button.locked {
-                opacity: 1; 
-                cursor: not-allowed;
-                position: relative;
-                background-color: #001219; 
-            }
-            .design-button.locked:hover {
-                 transform: none;
-                 box-shadow: none;
-            }
-            .design-button.locked::before {
-                content: attr(data-unlock-score); /* Display score from data attribute */
-                position: absolute;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                color: #94d2bd; /* Bright orange text */
-                font-weight: bold;
-                font-size: 3vw; /* Scales well on small/medium screens */
-                z-index: 10; 
-                text-shadow: 0 0 5px #001219;
-                line-height: 1; /* Explicitly set line height */
-            }
-
-            /* FIX: Cap the font size on larger screens (e.g., 800px and up) to prevent it from getting too large */
-            @media (min-width: 800px) {
-                .design-button.locked::before {
-                    font-size: 24px; /* Cap font size at a fixed size that fits well within the 70px button */
-                }
-            }
-
-            .design-preview-canvas {
-                width: 100%;
-                height: 100%;
-                display: block;
-                position: absolute;
-                top: 0;
-                left: 0;
-                z-index: 1; 
-            }
-
-            /* --- CRITICAL FIX: Dim the canvas when locked for contrast --- */
-            .design-button.locked .design-preview-canvas {
-                opacity: 0.2; 
-            }
-        `;
-        document.head.appendChild(style);
-
+        // NOTE: All styling has been moved to style.css for better organization and performance.
 
         overlay.innerHTML = `
             <div id="overlay-content">
@@ -244,8 +101,6 @@ export function OverlayManager(cnv) {
                     designChangeCallback(newDesignId); 
                 }
             });
-
-            // Add a touchend listener for mobile compatibility (REMOVED: The button only uses 'click' in the original version)
 
             designContainer.appendChild(button);
             designButtons.push(button);
@@ -333,16 +188,13 @@ export function OverlayManager(cnv) {
         // Initial display of the menu overlay
         showOverlay('Ball Runner', 'Instructions: Touch left/right half to rotate. Touch with two fingers to jump.', undefined, initialHighScore);
 
-        // --- Reverted Start Button Listener to only use click ---
         const startGame = () => {
             setGameState('playing');
             resetGameCallback();
         }
 
-        // 1. Desktop/Mouse Compatibility (Original only had click)
+        // Desktop/Mouse Compatibility
         startButton.addEventListener('click', startGame);
-
-        // REMOVED: Mobile/Touch Compatibility listener (touchend)
     };
 
     /**
